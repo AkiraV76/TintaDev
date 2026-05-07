@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tinta Dev</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Partículas de fondo -->
+  <div class="bg-particles" id="bgParticles"></div>
+
+  <div class="app-wrapper">
+
+    <!-- CABECERA -->
+    <header class="app-header">
+      <button class="theme-toggle" id="themeToggle" title="Cambiar modo claro/oscuro">
+        <span class="theme-icon" id="themeIcon">🌙</span>
+        <div class="theme-toggle-track"></div>
+        <span class="theme-toggle-label" id="themeLabel">Oscuro</span>
+      </button>
+      <div class="header-ornament left">✦ ✧ ✦</div>
+      <h1 class="app-title">
+        <span class="title-glow">Tinta</span>
+        <span class="title-accent">Dev</span>
+      </h1>
+      <div class="header-ornament right">✦ ✧ ✦</div>
+    </header>
+
+    <div class="app-body">
+
+      <!-- LIENZO -->
+      <section class="canvas-section">
+        <div class="canvas-frame">
+          <div class="canvas-corner tl"></div>
+          <div class="canvas-corner tr"></div>
+          <div class="canvas-corner bl"></div>
+          <div class="canvas-corner br"></div>
+          <canvas id="spellCanvas" width="600" height="600"></canvas>
+          <div class="canvas-hint" id="canvasHint">Haz click en un elemento del panel para añadirlo</div>
+        </div>
+        <div class="canvas-actions">
+          <button class="btn-arcane btn-copy" id="btnCopy">
+            <span class="btn-icon">⎘</span> Copiar al portapapeles
+          </button>
+          <button class="btn-arcane btn-clear" id="btnClear">
+            <span class="btn-icon">✕</span> Limpiar todo
+          </button>
+          <button class="btn-arcane btn-deselect" id="btnDeselect">
+            <span class="btn-icon">◈</span> Deseleccionar
+          </button>
+        </div>
+        <!-- Toast de notificación -->
+        <div class="toast" id="toast"></div>
+      </section>
+
+      <!-- PANEL DERECHO -->
+      <aside class="panel">
+
+        <!-- TABS PRINCIPALES -->
+        <nav class="panel-tabs">
+          <button class="tab-btn active" data-tab="elementos">Elementos</button>
+          <button class="tab-btn" data-tab="seleccionado">Seleccionado</button>
+          <button class="tab-btn" data-tab="sello">Sello</button>
+        </nav>
+
+        <!-- TAB: ELEMENTOS -->
+        <div class="tab-content active" id="tab-elementos">
+          <div class="tab-inner">
+            <p class="panel-desc">Selecciona una categoría y haz click en una miniatura para añadirla al lienzo.</p>
+
+            <!-- Categorías -->
+            <div class="category-tabs">
+              <button class="cat-btn active" data-cat="anillos">
+                <span>⊙</span> Anillos
+              </button>
+              <button class="cat-btn" data-cat="runas">
+                <span>ᚱ</span> Runas
+              </button>
+              <button class="cat-btn" data-cat="flechas">
+                <span>↑</span> Flechas
+              </button>
+            </div>
+
+            <!-- Galerías por categoría -->
+            <div class="gallery" id="gallery-anillos">
+              <!-- Se generan en JS -->
+            </div>
+            <div class="gallery hidden" id="gallery-runas"></div>
+            <div class="gallery hidden" id="gallery-flechas"></div>
+
+            <!-- Zona de carga de imágenes personalizadas -->
+            <div class="custom-upload">
+              <p class="upload-label">+ Añadir imagen personalizada</p>
+              <label class="upload-box" for="fileUpload">
+                <span>Arrastra un .png aquí o haz click</span>
+                <input type="file" id="fileUpload" accept="image/png,image/webp,image/svg+xml" multiple />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: SELECCIONADO -->
+        <div class="tab-content" id="tab-seleccionado">
+          <div class="tab-inner">
+            <div id="no-selection" class="empty-state">
+              <div class="empty-icon">◈</div>
+              <p>Ningún elemento seleccionado.<br/>Haz click sobre un elemento del lienzo.</p>
+            </div>
+            <div id="selection-controls" class="hidden">
+              <h3 class="ctrl-title" id="selectedName">Elemento</h3>
+
+              <div class="ctrl-group">
+                <label>Rotación <span class="ctrl-value" id="rotValue">0°</span></label>
+                <input type="range" id="rotSlider" min="0" max="360" value="0" class="arcane-slider" />
+              </div>
+
+              <div class="ctrl-group">
+                <label>Escala <span class="ctrl-value" id="scaleValue">100%</span></label>
+                <input type="range" id="scaleSlider" min="5" max="500" value="100" class="arcane-slider" />
+                <div class="scale-direct-row">
+                  <input type="number" id="scaleInput" min="5" max="500" value="100" class="arcane-input" style="width:70px" />
+                  <span class="scale-unit">%</span>
+                  <button class="btn-small" id="scalePreset25">25%</button>
+                  <button class="btn-small" id="scalePreset50">50%</button>
+                  <button class="btn-small" id="scalePreset100">100%</button>
+                  <button class="btn-small" id="scalePreset200">200%</button>
+                </div>
+              </div>
+
+              <div class="ctrl-group">
+                <label>Opacidad <span class="ctrl-value" id="opacityValue">100%</span></label>
+                <input type="range" id="opacitySlider" min="10" max="100" value="100" class="arcane-slider" />
+              </div>
+
+              <div class="ctrl-group">
+                <label>Tinte de color</label>
+                <div class="tint-row">
+                  <input type="color" id="tintColor" value="#ffffff" class="tint-picker" />
+                  <button class="btn-small" id="applyTint">Aplicar</button>
+                  <button class="btn-small btn-reset" id="resetTint">Quitar</button>
+                </div>
+              </div>
+
+              <div class="ctrl-group">
+                <label>Posición en círculo</label>
+                <div class="angle-row">
+                  <input type="number" id="orbitAngle" min="0" max="360" value="0" class="arcane-input" />
+                  <span>°</span>
+                  <input type="number" id="orbitRadius" min="0" max="300" value="180" class="arcane-input" />
+                  <span>px</span>
+                </div>
+                <button class="btn-arcane-sm" id="applyOrbit">Colocar en órbita</button>
+              </div>
+
+              <div class="ctrl-group nudge-group">
+                <label>Ajuste de posición fino</label>
+                <div class="nudge-step-row">
+                  <span class="nudge-step-label">Paso:</span>
+                  <button class="nudge-step-btn active" data-step="1">1px</button>
+                  <button class="nudge-step-btn" data-step="5">5px</button>
+                  <button class="nudge-step-btn" data-step="10">10px</button>
+                  <button class="nudge-step-btn" data-step="25">25px</button>
+                </div>
+                <div class="nudge-grid">
+                  <button class="nudge-btn nudge-up"     id="nudgeUp">↑</button>
+                  <button class="nudge-btn nudge-left"   id="nudgeLeft">←</button>
+                  <button class="nudge-btn nudge-center" id="nudgeCenter">✛</button>
+                  <button class="nudge-btn nudge-right"  id="nudgeRight">→</button>
+                  <button class="nudge-btn nudge-down"   id="nudgeDown">↓</button>
+                </div>
+                <div class="pos-xy-row">
+                  <span>X</span>
+                  <input type="number" id="posX" class="arcane-input" style="width:65px" placeholder="X" />
+                  <span>Y</span>
+                  <input type="number" id="posY" class="arcane-input" style="width:65px" placeholder="Y" />
+                  <button class="btn-small" id="applyPos">Ir</button>
+                </div>
+              </div>
+
+              <div class="ctrl-row-btns">
+                <button class="btn-arcane btn-delete-sel" id="btnDeleteSelected">
+                  <span class="btn-icon">✕</span> Eliminar este elemento
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: SELLO -->
+        <div class="tab-content" id="tab-sello">
+          <div class="tab-inner">
+            <div class="ctrl-group">
+              <label>Nombre del sello</label>
+              <input type="text" id="spellName" class="arcane-input full" placeholder="Ej: Sello de Ignis" />
+            </div>
+            <div class="ctrl-group">
+              <label>Autor</label>
+              <input type="text" id="spellAuthor" class="arcane-input full" placeholder="Ej: Archmage Selene" />
+            </div>
+            <div class="ctrl-group">
+              <label>Descripción</label>
+              <textarea id="spellDesc" class="arcane-textarea" placeholder="Describe el hechizo..."></textarea>
+            </div>
+            <div class="ctrl-group">
+              <label>Color de fondo del lienzo</label>
+              <div class="tint-row">
+                <input type="color" id="canvasBg" value="#0d0010" class="tint-picker" />
+                <button class="btn-small" id="applyBg">Aplicar</button>
+              </div>
+            </div>
+            <div class="ctrl-group">
+              <label>Color del glow</label>
+              <div class="tint-row">
+                <input type="color" id="glowColor" value="#9b30ff" class="tint-picker" />
+                <button class="btn-small" id="applyGlow">Aplicar</button>
+              </div>
+            </div>
+            <div class="ctrl-group">
+              <label class="toggle-label">
+                <input type="checkbox" id="showGrid" class="arcane-check" />
+                <span class="toggle-custom"></span>
+                Mostrar guías de círculo
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <!-- Menú contextual -->
+  <div class="context-menu hidden" id="contextMenu">
+    <button id="ctx-delete">✕ Eliminar elemento</button>
+    <button id="ctx-duplicate">⎘ Duplicar</button>
+    <button id="ctx-front">▲ Traer al frente</button>
+    <button id="ctx-back">▼ Enviar atrás</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
